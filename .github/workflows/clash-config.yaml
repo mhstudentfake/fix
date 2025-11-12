@@ -1,0 +1,137 @@
+port: 7890
+socks-port: 7891
+allow-lan: false
+mode: rule
+log-level: info
+ipv6: false
+external-controller: 127.0.0.1:9090
+
+dns:
+  enable: true
+  listen: 0.0.0.0:53
+  ipv6: false
+  enhanced-mode: fake-ip
+  fake-ip-range: 198.18.0.1/16
+  proxy-server-nameserver:
+    - 112.215.203.248
+    - 112.215.203.254
+  nameserver:
+    - 1.1.1.1
+    - 1.0.0.1
+  default-nameserver:
+    - 1.1.1.1
+    - 1.0.0.1
+  fallback-filter:
+    geoip: true
+    geoip-code: CN
+
+proxies:
+  - {
+      "name": "Singapore 🇸🇬 3",
+      "type": "vless",
+      "server": "atomarena.com",
+      "port": 443,
+      "uuid": "eeeeeee3-eeee-4eee-aeee-eeeeeeeeeee5",
+      "cipher": "none",
+      "tls": true,
+      "network": "ws",
+      "skip-cert-verify": true,
+      "udp": true,
+      "ws-opts": {
+        "path": "/13.250.31.132-443",
+        "headers": {
+          "Host": "atomarena.com"
+        }
+      },
+      "servername": "atomarena.com"
+    }
+
+proxy-groups:
+  - name: "🚀 Proxy"
+    type: select
+    proxies:
+      - ♻️ Auto
+      - ⚡ Fallback
+      - "Singapore 🇸🇬 3"
+      - DIRECT
+  - name: "♻️ Auto"
+    type: url-test
+    proxies:
+      - "Singapore 🇸🇬 3"
+    url: 'http://www.gstatic.com/generate_204'
+    interval: 300
+  - name: "⚡ Fallback"
+    type: fallback
+    proxies:
+      - "Singapore 🇸🇬 3"
+    url: 'http://www.gstatic.com/generate_204'
+    interval: 300
+  - name: "🎯 Direct"
+    type: select
+    proxies:
+      - DIRECT
+      - "🚀 Proxy"
+  - name: "🛑 Reject"
+    type: select
+    proxies:
+      - REJECT
+      - DIRECT
+  - name: "🌍 Global"
+    type: select
+    proxies:
+      - "🚀 Proxy"
+      - ♻️ Auto
+      - DIRECT
+  - name: "📺 Streaming"
+    type: select
+    proxies:
+      - "🚀 Proxy"
+      - ♻️ Auto
+      - "Singapore 🇸🇬 3"
+  - name: "🎮 Gaming"
+    type: select
+    proxies:
+      - DIRECT
+      - "🚀 Proxy"
+  - name: "📱 Telegram"
+    type: select
+    proxies:
+      - "🚀 Proxy"
+      - ♻️ Auto
+  - name: "🤖 AI"
+    type: select
+    proxies:
+      - "🚀 Proxy"
+      - ♻️ Auto
+rules:
+  - IP-CIDR,127.0.0.0/8,DIRECT
+  - IP-CIDR,192.168.0.0/16,DIRECT
+  - IP-CIDR,10.0.0.0/8,DIRECT
+  - IP-CIDR,172.16.0.0/12,DIRECT
+  - IP-CIDR,100.64.0.0/10,DIRECT
+  - IP-CIDR,224.0.0.0/4,DIRECT
+  - IP-CIDR,fe80::/10,DIRECT
+  - DOMAIN-SUFFIX,local,DIRECT
+  - DOMAIN-SUFFIX,doubleclick.net,🛑 Reject
+  - DOMAIN-SUFFIX,googleadservices.com,🛑 Reject
+  - DOMAIN-SUFFIX,googlesyndication.com,🛑 Reject
+  - DOMAIN-KEYWORD,adservice,🛑 Reject
+  - DOMAIN-KEYWORD,analytics,🛑 Reject
+  - DOMAIN-KEYWORD,pagead,🛑 Reject
+  - DOMAIN-SUFFIX,openai.com,🤖 AI
+  - DOMAIN-SUFFIX,claude.ai,🤖 AI
+  - DOMAIN-SUFFIX,t.me,📱 Telegram
+  - DOMAIN-SUFFIX,telegram.org,📱 Telegram
+  - DOMAIN-SUFFIX,netflix.com,📺 Streaming
+  - DOMAIN-SUFFIX,youtube.com,📺 Streaming
+  - DOMAIN-SUFFIX,spotify.com,📺 Streaming
+  - DOMAIN-SUFFIX,steampowered.com,🎮 Gaming
+  - DOMAIN-SUFFIX,discord.com,🎮 Gaming
+  - GEOIP,CN,🎯 Direct
+  - DOMAIN-SUFFIX,cn,🎯 Direct
+  - DOMAIN-KEYWORD,baidu,🎯 Direct
+  - DOMAIN-KEYWORD,qq,🎯 Direct
+  - DOMAIN-KEYWORD,alipay,🎯 Direct
+  - DOMAIN-KEYWORD,taobao,🎯 Direct
+  - DOMAIN-KEYWORD,bilibili,🎯 Direct
+  - MATCH,🌍 Global
